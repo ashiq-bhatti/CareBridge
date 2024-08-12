@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "mongoose": "^8.5.2",
+    "slick-carousel": "^1.8.1"
+  }
+}
