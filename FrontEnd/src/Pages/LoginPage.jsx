@@ -1,11 +1,17 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { post } from "../Services/ApiEndPoint";
-import { toast } from 'react-hot-toast';
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
+// import loginimg from "../imgHelpTodat/login.jpg";
+import loginimg from "../imgHelpTodat/hospital.jpg";
 
-// import axios from "axios";
+import { useDispatch } from "react-redux";
+import { SetPatient } from "../ReduxToolkit/AuthSlice";
+import axios from "axios";
+import AdminDashboard from "./AdminPages/AdminDashboard";
 
 export default function LoginPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,25 +27,50 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // debugger
     const { email, password } = formData;
     try {
-      const request = await post("/api/auth/login", { email, password });
+      const request = await axios.post("http://localhost:5000/api/auth/login", {
+        email,
+        password,
+      });
       const response = request.data;
-      if (response.status == 200) {
+      console.log("::::", response);
+      if (request.status === 200) {
+        if (response.patient.role === "admin") {
+          navigate("/admin");
+        } else if (response.patient.role === "patient") {
+          navigate("/");
+        }
         toast.success(response.message);
+        dispatch(SetPatient(response.patient));
       }
-      console.log(response);
-
     } catch (error) {
-      console.error("Error logging in:", error);
+      if (error.response) {
+        if (error.response.status === 404) {
+          toast.error("User not found");
+        } else if (error.response.status === 401) {
+          toast.error("Invalid password");
+        } else {
+          toast.error("Unexpected error occurred");
+        }
+      }
+      console.error("Error logging in..", error);
     }
   };
 
   return (
-    <>
-      <div className="w-full max-w-sm  mx-auto mt-10 bg-white border-2 p-8 shadow-md rounded-md">
-        <div className="w-full max-w-2xl">
-          <h1 className=" text-2xl font-bold mb-6 text-center text-gray-700">
+    <div
+      style={{
+        backgroundImage: `url(${loginimg})`,
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+        height: "100vh",
+      }}
+    >
+      <div className="flex items-center justify-center h-full">
+        <div className="w-full max-w-sm mx-auto bg-white border-2 p-8 shadow-md rounded-md">
+          <h1 className="text-2xl font-bold mb-6 text-center text-gray-700">
             Patient Login
           </h1>
           <form onSubmit={handleSubmit}>
@@ -67,21 +98,24 @@ export default function LoginPage() {
                 id="password"
                 placeholder="Please enter the password"
                 onChange={handleChange}
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className=" mb-2 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 required
               />
+              <Link to="/forget-password" className="text-blue-600 ">
+                Forgot Password
+              </Link>
             </div>
             <div className="mb-4">
               <button
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-700 text-white  py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+                className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
               >
                 Login
               </button>
             </div>
             <div className="text-center">
               <p className="text-gray-600">
-                Don't have an account? {""}
+                Don't have an account?{" "}
                 <Link to="/register" className="text-blue-500 hover:underline">
                   Go to Register
                 </Link>
@@ -90,6 +124,6 @@ export default function LoginPage() {
           </form>
         </div>
       </div>
-    </>
+    </div>
   );
 }

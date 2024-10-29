@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { IoSearch } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { IoSearchSharp } from "react-icons/io5";
 import gynecologist from "../imgConsult_doct/gynecologist.png";
 import blood from "../imgConsult_doct/blood.png";
 import child from "../imgConsult_doct/child.png";
@@ -22,8 +23,19 @@ import tcs from "../imgPartnerLogo/tcs.png";
 import zameen from "../imgPartnerLogo/zameen.png";
 import hbl from "../imgPartnerLogo/hbl.jfif";
 import HOC from "../Components/HOC";
+import CustomerReview from "../Components/CustomerReview";
+import { Blog } from "../StaticAPI/ApiData";
+import AllSpecialityModal from "../Components/Modals/AllSpecialityModal";
+import { useSelector } from "react-redux";
 
-  const HomePage = () => {
+
+const HomePage = () => {
+const user = useSelector((state)=>state.Auth.user)
+console.log(user)
+
+
+  const [showAllSpecialityModal, setShowAllSpecialityModal] = useState(false);
+
   return (
     <>
       {/* Find doctor section Start*/}
@@ -31,22 +43,41 @@ import HOC from "../Components/HOC";
       <div className="w-full h-72 bg-gradient-to-b from-sky-100  flex flex-col justify-center">
         <div className="w-[90%] md:w-[70%] mx-auto text-center text-2xl md:text-5xl mb-5 font-semibold p-4 md:p-8">
           <h1>
-            Find and Book the Best{" "}
+           Find and Book the Best{" "}
             <span className="text-blue-500">Doctors or Hospital</span> near you
           </h1>
         </div>
-        <div className="flex justify-center gap-2 h-11">
+
+        {/* <div className="w-[40%] mx-auto flex rounded border my-10 p-1">
           <input
-            type="search"
-            placeholder="Enter City"
-            className="border border-gray-300 rounded px-3 py-2 focus:outline-none w-full max-w-xs"
+            type="text"
+            placeholder="City"
+            name=""
+            id=""
+            className='w-full rounded border-none outline-none p-2 text-lg" placeholder="No border input"'
           />
+          <hr className="w-1 h-7 self-center bg-slate-600" />
           <input
-            type="search"
-            placeholder="Doctors, Hospital"
-            className="border border-gray-300 rounded px-3 py-2 focus:outline-none w-full max-w-xs"
+            type="text"
+            placeholder="Doctor , Hospital , Spacialisty"
+            name=""
+            id=""
+            className='w-full rounded border-none outline-none p-2 text-lg" placeholder="No border input"'
           />
-        </div>
+          <button type="submit" className="px-4">
+            {" "}
+            <IoSearchSharp className="text-xl " />
+          </button>
+        </div> */}
+        {/* {
+          Blog.filter((e)=>{
+            if (searchItem == '') {
+              return e;
+            } else if(e.speciality.toLocaleLowerCase().includes(searchItem.toLowerCase())){
+              return e;
+            }
+          })
+        } */}
       </div>
 
       {/* How can we help you today  cardes Start*/}
@@ -59,8 +90,9 @@ import HOC from "../Components/HOC";
             className="flex flex-col md:flex-row gap-4"
           >
             <div id="left-cards" className="flex flex-col md:w-[50%] gap-2">
-              <div className="flex flex-col md:flex-row gap-2">
-                <div className="flex justify-between bg-yellow-200 rounded  flex-1">
+              <div className="flex flex-col md:flex-row gap-2">               
+                <div onClick={()=>{setShowAllSpecialityModal(true)}}
+                className="flex justify-between bg-yellow-200 rounded cursor-pointer  flex-1">
                   <div className="pl-3 pt-2">
                     <h1 className="text-blue-950 font-semibold ">
                       Video Consultation
@@ -87,6 +119,7 @@ import HOC from "../Components/HOC";
                   />
                 </div>
               </div>
+              <Link to='/blogPage'>
               <div className="flex justify-between p-0 bg-green-200 rounded ">
                 <div className="pl-3 pt-2">
                   <h1 className="text-blue-950 font-semibold">Health Blogs</h1>
@@ -98,6 +131,7 @@ import HOC from "../Components/HOC";
                   alt=""
                 />
               </div>
+              </Link>
             </div>
             <div id="right-cards" className="flex flex-col md:w-[50%] gap-2">
               <div className="flex justify-between bg-green-200 rounded p-0">
@@ -146,6 +180,7 @@ import HOC from "../Components/HOC";
                     Hospitals
                   </h1>
                 </div>
+                <Link to='/surgeriesPage'>
                 <div className="border-b-2 flex flex-col items-center rounded-md bg-white p-2 md:w-32">
                   <img
                     className="h-24"
@@ -156,6 +191,7 @@ import HOC from "../Components/HOC";
                     Surgeries
                   </h1>
                 </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -168,10 +204,9 @@ import HOC from "../Components/HOC";
           <h1 className="text-xl font-semibold ">
             Consult best doctors online
           </h1>
-          <Link to="#">
-            {" "}
-            <h1 className="text-xl font-semibold text-blue-950">View All</h1>
-          </Link>
+            <h1 
+            onClick={() => setShowAllSpecialityModal(true)}
+             className="text-xl font-semibold cursor-pointer text-blue-950">View All</h1>
         </div>
         <div className="flex flex-wrap gap-16 my-10">
           <Link to="#">
@@ -207,7 +242,7 @@ import HOC from "../Components/HOC";
           <Link to="#">
             <div className="flex flex-col w-28">
               <img src={orthopedic} alt="" />
-              <h1 className="py-4">Child Specialist</h1>
+              <h1 className="py-4">Orthopedic Specialist</h1>
             </div>
           </Link>
           <Link to="#">
@@ -217,6 +252,10 @@ import HOC from "../Components/HOC";
             </div>
           </Link>
         </div>
+        <AllSpecialityModal
+          show={showAllSpecialityModal}
+          close={() => setShowAllSpecialityModal(!showAllSpecialityModal)}
+        />
       </div>
 
       {/* Search doctor by condition */}
@@ -224,7 +263,7 @@ import HOC from "../Components/HOC";
       <div className="w-[88%] m-auto">
         <div className="flex justify-between">
           <h1 className="text-xl font-semibold mb-4">
-            Consult best doctors online
+            Search doctor by condition
           </h1>
           <Link to="#">
             {" "}
@@ -291,15 +330,51 @@ import HOC from "../Components/HOC";
         </div>
       </div>
 
-      {/* nbcndbfvgk*/}
+      {/* Health Articals */}
+      {/* <HealthBlog /> */}
+      <h1 className="font-bold text-lg pl-20 py-4">Health Articals</h1>
+      <div className="bg-slate-100 flex flex-wrap gap-4 justify-center py-7">
+        {Blog.length > 0 ? (
+          Blog.map((article) => (
+            <div
+              key={article.id}
+              className="border rounded-md shadow overflow-hidden w-full sm:w-1/2 md:w-1/4 lg:w-1/4 xl:w-1/4 2xl:w-1/3"
+            >
+              <Link to="/singleBlogPage">
+                <img
+                  className="w-full h-44 object-cover"
+                  src={article.img}
+                  alt={article.title}
+                />
+              </Link>
+              <div className="px-5 py-2">
+                <h1 className="py-2 font-bold cursor-pointer">
+                  {article.title}
+                </h1>
+              </div>
+            </div>
+          )).slice(0, 3)
+        ) : (
+          <p>No articles available.</p>
+        )}
+      </div>
+
+      {/*  Customer reviews start */}
+      <div className="w-[90%] m-auto mt-4">
+        <h1 className="font-bold text-lg py-5">Our Customers Love</h1>
+        <div className=" flex gap-3 ">
+          <CustomerReview />
+          <CustomerReview />
+        </div>
+      </div>
 
       {/* marquee section start */}
 
-      <div id="marquee-section" className="">
+      <div id="marquee-section" className="py-6">
         <div className="self-marquee w-[90%] m-auto  ">
-          <h1 className="text-xl font-semibold">Our Technology Partners</h1>
+          <h1 className="font-bold text-lg">Our Technology Partner</h1>
           <div className="p-10">
-            <Marquee  pauseOnClick speed={100} delay={2}>
+            <Marquee pauseOnClick speed={100} delay={2}>
               <div className="flex gap-20 items-center">
                 <div className="w-32 ml-16">
                   <img src={sony} alt="" />
@@ -332,9 +407,8 @@ import HOC from "../Components/HOC";
       </div>
 
       {/* new section */}
-    
     </>
   );
-}
+};
 
-export default  HOC(HomePage)
+export default HOC(HomePage);

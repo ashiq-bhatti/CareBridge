@@ -1,4 +1,5 @@
 import React from 'react'
+import HOC from '../Components/HOC'
 
 function HospitalsPage() {
   return (
@@ -8,4 +9,4 @@ function HospitalsPage() {
   )
 }
 
-export default HospitalsPage
+export default HOC(HospitalsPage)

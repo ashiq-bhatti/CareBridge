@@ -5,6 +5,8 @@ const isAdmin = async (req, res, next) => {
   try {
     const token = req.cookies.token;
 
+    console.log(token)
+    
     if (!token) {
       return res.status(401).json({
         message: "Unauthorized: Token not provided",
@@ -29,11 +31,11 @@ const isAdmin = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error("Error during authorization:", error);
     res.status(500).json({
       success: false,
       message: "Server internal error",
     });
+    console.error("Error during authorization:", error);
   }
 };
 

@@ -1,12 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import DrBySpecialtyPage from "../Pages/DrSpecialityByCityPage";
 
 function SpecialityByCitySmallBox() {
   return (
     <>
-      <div className="bg-blue-800 rounded ">
-        <Link to="/drSpecialityByCityPage">
+      <div className="bg-blue-800 rounded relative right-10 z-40  px-5 py-2">
+        <Link to="">
           <h1 className="text-white">Ent In Lahore</h1>
         </Link>
         <Link to="">

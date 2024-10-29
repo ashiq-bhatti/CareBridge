@@ -1,35 +1,33 @@
 const PatientModel = require("../models/patient.js");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Check if the patient already exists
     const existingPatient = await PatientModel.findOne({ email });
     if (existingPatient) {
       return res.status(401).json({
         success: false,
-        message: "Patient already exists.",
+        message: "User already exists.",
       });
     }
 
-    // Create a new patient
-    const hashedPassword = await bcryptjs.hash(password, 10);
+    const hashdPassword = await bcryptjs.hash(password, 10);
 
     const newPatient = new PatientModel({
       name,
       email,
-      password: hashedPassword,
+      password: hashdPassword,
     });
 
-    // Save the new patient
     await newPatient.save();
 
     res.status(201).json({
       success: true,
-      message: "Patient registered successfully",
+      message: "User registered successfully",
       patient: newPatient,
     });
   } catch (error) {
@@ -50,7 +48,7 @@ const login = async (req, res) => {
     if (!existingPatient) {
       return res.status(404).json({
         success: false,
-        message: "Invalid credentials",
+        message: "User not found",
       });
     }
 
@@ -59,7 +57,7 @@ const login = async (req, res) => {
       existingPatient.password
     );
     if (!isPasswordValid) {
-      return res.status(404).json({
+      return res.status(401).json({
         success: false,
         message: "Invalid password",
       });
@@ -67,13 +65,13 @@ const login = async (req, res) => {
 
     const token = jwt.sign(
       { PatientId: existingPatient._id },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET
     );
 
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
-      maxAge: 3600000, // 1 hour
+      maxAge: 3600000,
     });
 
     res.status(200).json({
@@ -93,12 +91,13 @@ const login = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    res.clearCookie('token');
+    res.clearCookie("token");
     res.status(200).json({
-      message: 'Logged out successfully'
+      success: true,
+      message: "Logged out successfully",
     });
   } catch (error) {
-    console.error("Error during logout:", error);
+    console.error("Error during logout.:", error);
     res.status(500).json({
       success: false,
       message: "Server internal error",
@@ -106,12 +105,78 @@ const logout = async (req, res) => {
   }
 };
 
-exports.forgetPassword = (req,res,next)=>{
+const ForgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await PatientModel.findOne({ email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not exists" });
+    }
 
-}
-exports.resetPassword = (req,res,next)=>{
-  
-}
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    console.log(token);
 
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "mhassnainali1122@gmail.com",
+        pass: "fqxtdciihpevzdhk",
+      },
+    });
 
-module.exports = { register, login, logout };
+    const mailOptions = {
+      from: "mhassnainali1122@gmail.com",
+      to: email,
+      subject: "Reset Password Link From Care Bridge",
+      text: `http://localhost:5173/reset-password/${user._id}/${token}`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        return res
+          .status(500)
+          .json({ success: false, message: "Failed to send email" });
+      } else {
+        res
+          .status(200)
+          .json({ success: true, message: "Reset link sent successfully" });
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const ResetPassword = async (req, res) => {
+  const { id, token } = req.params;
+  const { password } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const hashPassword = await bcryptjs.hash(password, 10);
+
+    await PatientModel.findByIdAndUpdate(
+      { _id: decoded.id },
+      { password: hashPassword }
+    );
+
+    res
+      .status(200)
+      .json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error during reset password..", error);
+    res.status(500).json({
+      success: false,
+      message: "Invalid  or expired token",
+    });
+  }
+};
+
+module.exports = { register, login, logout, ForgotPassword, ResetPassword };

@@ -8,8 +8,11 @@ const DbConnect = async () => {
         });
         console.log("MongoDB is successfully connected..");
     } catch (error) {
-        console.error("MongoDB connection error:", error);
+        console.error("MongoDB connection error...", error);
     }
 };
-
+ 
 module.exports = DbConnect;
+
+
+
