@@ -54,15 +54,18 @@ function PatAppointmentFormDetailPage() {
     e.preventDefault();
     const { name, phone, date, time, payMethod } = formData;
     try {
+      // const request = await axios.post(
+      //   `http://localhost:5000/api/patientappointmentbooking/bookappointment`,
+      //   { name, phone, date, time, payMethod }
+      // );
       const request = await axios.post(
-        `http://localhost:5000/api/patientappointmentbooking/bookappointment`,
-        { name, phone, date, time, payMethod }
+        `http://localhost:5000/api/create-checkout-session`,
       );
       const response = request.data;
       if (request.status === 200) {
-        // handleClick()
+        handleClick()
         toast.success(response.message);
-        navigate(`/bookingSuccessPage/:id`)
+        // navigate(`/bookingSuccessPage/:id`)
       }
       console.log(response);
     } catch (error) {
@@ -90,7 +93,6 @@ function PatAppointmentFormDetailPage() {
       console.error(error)
     }
   }
- 
 
   return (
     <div

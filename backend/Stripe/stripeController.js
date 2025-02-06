@@ -16,7 +16,7 @@ const StripePayment = async(req, res) => {
                         name: 'Dr Name',
                         // images: ['https://example.com/image/123'],
                     },
-                    unit_amount: 9000,
+                    unit_amount: 1000,
                 },
                 quantity: 1,
             }],

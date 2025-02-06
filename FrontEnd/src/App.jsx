@@ -79,9 +79,8 @@ export default function App() {
             element={<BookingSuccessPage />}
           />
 
-          <Route path='/success' element={<BookingSuccessPage />}/>
-          <Route path='/cancel' element={<BookingNotSuccess />}/>
-
+          <Route path="/success" element={<BookingSuccessPage />} />
+          <Route path="/cancel" element={<BookingNotSuccess />} />
 
           <Route
             path="/drUpdateFormAdmin/:id"

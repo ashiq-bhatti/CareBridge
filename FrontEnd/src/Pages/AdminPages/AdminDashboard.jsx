@@ -76,7 +76,7 @@ function AdminDashboard() {
                   <h1 className="text-lg font-semibold">400 +</h1>
                   <p>In Auguest</p>
                 </div>
-                <div className="w-12 h-12 bg-white rounded-full ">
+                <div className="w-12 h-12 bg-white rounded-full mt-3 mr-3 ">
                   <RiVidiconLine className=" text-black text-2xl ml-3 mt-2 " />
                 </div>
               </div>

@@ -10,7 +10,7 @@ const initialState ={
 const AuthSlice = createSlice({
   initialState:initialState,
   name:"AuthSlice",
-
+  
   reducers:{
     SetPatient:(state,action)=>{
       state.user = action.payload;
